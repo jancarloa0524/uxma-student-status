@@ -1,0 +1,24 @@
+{
+  "name": "uxma-student-status",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jancarloa0524/uxma-student-status.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jancarloa0524/uxma-student-status/issues"
+  },
+  "homepage": "https://github.com/jancarloa0524/uxma-student-status#readme",
+  "dependencies": {
+    "firebase": "^9.6.11"
+  }
+}
