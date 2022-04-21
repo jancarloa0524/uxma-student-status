@@ -1,10 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { 
-    getFirestore,
-    collection,
-    onSnapshot,
-    addDoc
- } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot, setDoc, updateDoc, doc, query, where, arrayUnion } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -22,9 +17,9 @@ initializeApp(firebaseConfig)
 const db = getFirestore()
 
 // collection reference
-
 const colRef = collection(db, 'students')
 
+// Show students in console
 onSnapshot(colRef, (snapshot) => {
     let students = []
     snapshot.docs.forEach((doc) => {
@@ -33,11 +28,12 @@ onSnapshot(colRef, (snapshot) => {
     console.log(students)
 })
 
+// Add a student to the database
 const addStudentForm = document.querySelector('.add')
 addStudentForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
-    addDoc(colRef, {
+    setDoc(doc(db, 'students', addStudentForm.name.value), {
         name: addStudentForm.name.value,
         attendance: [],
         report: ""
@@ -46,3 +42,20 @@ addStudentForm.addEventListener('submit', (e) => {
             addStudentForm.reset()
         })
 })
+
+// Add attendance day to a student
+const dayForm = document.querySelector('.day')
+
+dayForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+  
+  const docRef = doc(db, 'students', dayForm.student.value)
+
+  updateDoc(docRef, {
+      attendance: arrayUnion(dayForm.selectDay.value)
+  })
+    .then(() => {
+        dayForm.student.value = ""
+    })
+})
+

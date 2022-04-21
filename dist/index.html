@@ -15,10 +15,19 @@
         <button>Add Student</button>
       </form>
 
-    <form class="days">
+    <form class="day">
+        <label for="day">Days:</label>
+        <select name="selectDay">
+          <option value="Monday" selected="selected">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+        </select>
         
-        <button>Add/Update Attendance</button>
-    </form>
+        <input type="text" name="student" class="student">
+        <input type="submit" value="Submit">
+      </form>
 
     <script src="bundle.js"></script>
 </body>
