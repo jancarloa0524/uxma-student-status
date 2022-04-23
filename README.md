@@ -9,3 +9,5 @@ My plan:
 Extra:
 * Add the ability to delete students entirely
 * Add the ability to remove a student from the created list
+
+I used this as a basis for creating a table: https://jsbin.com/toquhopipa/edit?html,css,js,console,output

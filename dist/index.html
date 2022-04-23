@@ -17,7 +17,7 @@
     <h1>UXMA-Student-Status Application</h1>
 
     <form class="add">
-        <label for="name">Name:</label>
+        <label for="name">Add Student To Database:</label>
         <input type="text" name="name" required>
         
         <button>Add Student</button>
@@ -31,6 +31,7 @@
           <option value="Wednesday">Wednesday</option>
           <option value="Thursday">Thursday</option>
           <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
         </select>
         
         <input type="text" name="student">
@@ -52,6 +53,48 @@
           <th>Day</th>
           <th>Report</th>
         </tr>
+    </table>
+
+    <br>
+    <h2>Reset/Remove Data:</h2>
+    <form class="startNewWeek">
+        <label for="newWeek">This will reset all reports and attendance!</label>
+        <button> Start New Week </button>
+    </form>
+
+    <form class="resetStudentAttendance">
+        <label for="resetStudent">Reset attendance for a specific student:</label>
+        <input type="text" name="student">
+        <button>Reset Attendance</button>
+    </form>
+
+    <form class="removeSpecificDay">
+        <label for="removeDay">This will remove a specific day for a specific student:</label>
+        <select name="selectDay">
+            <option value="Monday" selected="selected">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+        <input type="text" name="student">
+        <button>Remove Day</button>
+    </form>
+
+    <form class="removeStudent">
+        <label for="remove">Remove Student From Database:</label>
+        <input type="text" name="student">
+        <button>Remove Student</button>
+    </form>
+
+    <h2>Student Reference Table</h2>
+    <p>This is to make sure that, if you forget any of the students names, simply check this in order to figure out how to enter them in</p>
+    <table class="referenceTable">
+        <tr>
+          <th>Student</th>
+        </tr>
+    </table>
 
     <script src="bundle.js"></script>
 </body>

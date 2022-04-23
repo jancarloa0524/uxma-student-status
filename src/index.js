@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, onSnapshot, setDoc, updateDoc, doc, arrayUnion, getDocs } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot, setDoc, updateDoc, doc, arrayUnion, arrayRemove, getDocs, deleteDoc } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -57,29 +57,52 @@ dayForm.addEventListener('submit', (e) => {
     .then(() => {
         dayForm.student.value = ""
     })
+    .catch(err => {
+        alert("Please enter a valid user!")
+        dayForm.student.value = ""
+    })
 })
 
 // Write reports:
 const reportForm = document.querySelector('.report')
 reportForm.addEventListener('submit', (e) => {
     e.preventDefault()
+    
+    if (reportForm.reportEntry.value != "") {
+        const docRef = doc(db, 'students', reportForm.student.value)
 
-    const docRef = doc(db, 'students', reportForm.student.value)
-
-    updateDoc(docRef, {
-        report: reportForm.reportEntry.value
-    })
-      .then(() => {
-          reportForm.reset()
-      })
+        updateDoc(docRef, {
+            report: reportForm.reportEntry.value
+        })
+            .then(() => {
+                reportForm.reset()
+            })
+            .catch(err => {
+            alert("Please enter a valid user!")
+            reportForm.student.value = ""
+        })
+    } else {
+        alert("Please write an entry!")
+    }
 })
 
 // Real-Time Table
 onSnapshot(colRef, (snapshot) => {
     var table = document.querySelector('.table')
+    
+    let rows = document.querySelectorAll('.row')
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].remove()
+    }
+
+    let data = document.querySelectorAll('td')
+    for (var i = 0; i < data.length; i++) {
+        data[i].remove()
+    }
 
     snapshot.docs.forEach((doc) => {
         let row = document.createElement('tr')
+        row.classList.add('row')
         table.appendChild(row)
         if(doc.data().attendance != "") {
             for (var j = 0; j <= 2; j++) {
@@ -97,10 +120,103 @@ onSnapshot(colRef, (snapshot) => {
     })
 })
 
-// Plan for making/seeing student report
-/*
-First, users msut be able to write reports
-    In order to do this, I will allow users to be able to cycle through the users that they haven't written about yet
-Second, users must be able to see all data
-Use code found here https://jsbin.com/toquhopipa/edit?html,css,js,console,output as basis for creating the table
-*/
+// Reset Weekly Report
+const newWeekForm = document.querySelector('.startNewWeek')
+newWeekForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    let studentList = []
+    getDocs(colRef)
+        .then((snapshot) => {
+            snapshot.docs.forEach((doc) => {
+                studentList.push(doc.data().name)
+            })
+
+            studentList.forEach((student) => {
+                const docRef = doc(db, 'students', student)
+                updateDoc(docRef, {
+                    attendance: [],
+                    report: ""
+                })
+            })
+        })
+})
+
+// Reset a Specific Student's Attendance
+const resetStudentAttendanceForm = document.querySelector('.resetStudentAttendance')
+resetStudentAttendanceForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const docRef = doc(db, 'students', resetStudentAttendanceForm.student.value)
+
+    updateDoc(docRef, {
+        attendance: []
+    })
+        .then(() => {
+            resetStudentAttendanceForm.reset()
+        })
+        .catch(err => {
+            alert("Please enter a valid user!")
+            resetStudentAttendanceForm.student.value = ""
+        })
+})
+
+// Remove a specific day from a students attendance
+const removeSpecificDayForm = document.querySelector('.removeSpecificDay')
+removeSpecificDayForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const docRef = doc(db, 'students', removeSpecificDayForm.student.value)
+
+  updateDoc(docRef, {
+      attendance: arrayRemove(removeSpecificDayForm.selectDay.value)
+  })
+    .then(() => {
+        removeSpecificDayForm.student.value = ""
+    })
+    .catch(err => {
+        alert("Please enter a valid user!")
+        removeSpecificDayForm.student.value = ""
+    })
+})
+
+// Remove a student from the database
+const removeStudentForm = document.querySelector('.removeStudent')
+removeStudentForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const docRef = doc(db, 'students', removeStudentForm.student.value)
+    deleteDoc(docRef)
+        .then(() => {
+            removeStudentForm.reset()
+        })
+        .catch(err => {
+            alert("Please enter a valid user!")
+        })
+})
+
+// Real-Time Reference Table
+onSnapshot(colRef, (snapshot) => {
+    var table = document.querySelector('.referenceTable')
+    
+    let rows = document.querySelectorAll('.studentRow')
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].remove()
+    }
+
+    let data = document.querySelectorAll('.student')
+    for (var i = 0; i < data.length; i++) {
+        data[i].remove()
+    }
+
+    snapshot.docs.forEach((doc) => {
+        let row = document.createElement('tr')
+        row.classList.add('studentRow')
+        table.appendChild(row)
+
+        let item = document.createElement('td')
+        item.classList.add('student')
+        item.innerHTML = doc.data().name
+        row.appendChild(item)
+    })
+})
