@@ -10,4 +10,5 @@ Extra:
 * Add the ability to delete students entirely
 * Add the ability to remove a student from the created list
 
-I used this as a basis for creating a table: https://jsbin.com/toquhopipa/edit?html,css,js,console,output
+I used this as a basis for creating a table: https://jsbin.com/qikaguquxo/edit?html,css,js,console,output
+And used this as a basis for creating the ability to add certain days for certain students: https://jsbin.com/coxobadiku/edit?html,js,console,output
