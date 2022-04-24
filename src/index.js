@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, onSnapshot, setDoc, updateDoc, doc, arrayUnion, arrayRemove, getDocs, deleteDoc } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot, getDocs, getDoc, setDoc, deleteDoc, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -81,6 +81,39 @@ reportForm.addEventListener('submit', (e) => {
             alert("Please enter a valid user!")
             reportForm.student.value = ""
         })
+    } else {
+        alert("Please write an entry!")
+    }
+})
+
+// Add to existing report:
+const addReportForm = document.querySelector('.addToReport')
+addReportForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    
+    if (addReportForm.reportEntry.value != "") {
+        const docRef = doc(db, 'students', addReportForm.student.value)
+
+        var previousData
+
+        getDoc(docRef)
+            .then((doc) => {
+                previousData = doc.data().report
+                console.log(previousData)
+
+                updateDoc(docRef, {
+                    report: previousData + " " + addReportForm.reportEntry.value
+                })
+                .then(() => {
+                    addReportForm.reset()
+                })
+            })
+            .catch(err => {
+                alert("Please enter a valid user!")
+                addReportForm.student.value = ""
+            })
+        
     } else {
         alert("Please write an entry!")
     }
