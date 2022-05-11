@@ -6,10 +6,46 @@
     <title>UXMA-Student-Status</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         table, th, td {
             border: 1px solid black;
             border-collapse: collapse;
             padding: 10px;
+        }
+
+        .modal-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            opacity: 0;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .modal-container.show {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .modal {
+            background-color: #fff;
+            padding: 30px 50px;
+            width: 600px;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: red
         }
     </style>
 </head>
@@ -106,6 +142,18 @@
           <th>Student</th>
         </tr>
     </table>
+
+    <div class="modal-container show" id="modal_container">
+        <div class="modal">
+            <form class="login">
+                <label for="email">Email:</label>
+                <input type="email" name="email">
+                <label for="password">Password:</label>
+                <input type="password" name="password">
+                <button>Login</button>
+            </form>
+        </div>
+    </div>
 
     <script src="bundle.js"></script>
 </body>

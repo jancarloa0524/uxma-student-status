@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, onSnapshot, getDocs, getDoc, setDoc, deleteDoc, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -15,6 +16,7 @@ initializeApp(firebaseConfig)
 
 // init services
 const db = getFirestore()
+const auth = getAuth()
 
 // collection reference
 const colRef = collection(db, 'students')
@@ -251,5 +253,32 @@ onSnapshot(colRef, (snapshot) => {
         item.classList.add('student')
         item.innerHTML = doc.data().name
         row.appendChild(item)
+    })
+})
+
+// Login user
+const loginForm = document.querySelector('.login')
+loginForm.addEventListener('submit', (e) =>{
+  e.preventDefault()
+
+  // get email and password values
+  const email = loginForm.email.value
+  const password = loginForm.password.value
+
+  // pass in auth, email, and password, then login user, catch error if occured
+  signInWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+      console.log('user logged in:', cred.user)
+      loginForm.reset()
+      modal_container.classList.remove("show"); // Removes modal
+    })
+    .catch((err) => {
+      console.log(err.message)
+      loginForm.reset()
+
+      // Add's error message to login modal
+      var errorMessage = document.createElement('p')
+      errorMessage.innerHTML = "Incorrect Password"
+      loginForm.appendChild(errorMessage) 
     })
 })
