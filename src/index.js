@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, onSnapshot, getDocs, getDoc, setDoc, deleteDoc, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence, browserSessionPersistence } from 'firebase/auth'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -20,6 +20,10 @@ const auth = getAuth()
 
 // collection reference
 const colRef = collection(db, 'students')
+
+// current logged-in user reference
+const user = auth.currentUser;
+
 
 // Show students in console
 onSnapshot(colRef, (snapshot) => {
@@ -43,6 +47,14 @@ addStudentForm.addEventListener('submit', (e) => {
         .then(() => {
             addStudentForm.reset()
         })
+        .catch((err) => {
+            addStudentForm.reset()
+            if (user == null) {
+                alert("Login in order to use the site!")
+            } else {
+                alert('An error has occured! Try again.')
+            }
+        })
 })
 
 // Add attendance day to a student
@@ -59,9 +71,13 @@ dayForm.addEventListener('submit', (e) => {
     .then(() => {
         dayForm.student.value = ""
     })
-    .catch(err => {
-        alert("Please enter a valid user!")
+    .catch((err) => {
         dayForm.student.value = ""
+        if (user == null) {
+            alert("Login in order to use the site!")
+        } else {
+            alert("Please enter a valid user!")
+        }
     })
 })
 
@@ -79,9 +95,9 @@ reportForm.addEventListener('submit', (e) => {
             .then(() => {
                 reportForm.reset()
             })
-            .catch(err => {
-            alert("Please enter a valid user!")
-            reportForm.student.value = ""
+            .catch((err) => {
+                alert("Please enter a valid user!")
+                reportForm.student.value = ""
         })
     } else {
         alert("Please write an entry!")
@@ -111,7 +127,7 @@ addReportForm.addEventListener('submit', (e) => {
                     addReportForm.reset()
                 })
             })
-            .catch(err => {
+            .catch((err) => {
                 alert("Please enter a valid user!")
                 addReportForm.student.value = ""
             })
@@ -122,7 +138,7 @@ addReportForm.addEventListener('submit', (e) => {
 })
 
 // Real-Time Table
-onSnapshot(colRef, (snapshot) => {
+const unsubRealTable = onSnapshot(colRef, (snapshot) => {
     var table = document.querySelector('.table')
     
     let rows = document.querySelectorAll('.row')
@@ -175,6 +191,9 @@ newWeekForm.addEventListener('submit', (e) => {
                 })
             })
         })
+        .catch((err) => {
+            alert("An error has occured! Try again.")
+        })
 })
 
 // Reset a Specific Student's Attendance
@@ -190,7 +209,7 @@ resetStudentAttendanceForm.addEventListener('submit', (e) => {
         .then(() => {
             resetStudentAttendanceForm.reset()
         })
-        .catch(err => {
+        .catch((err) => {
             alert("Please enter a valid user!")
             resetStudentAttendanceForm.student.value = ""
         })
@@ -209,7 +228,7 @@ removeSpecificDayForm.addEventListener('submit', (e) => {
     .then(() => {
         removeSpecificDayForm.student.value = ""
     })
-    .catch(err => {
+    .catch((err) => {
         alert("Please enter a valid user!")
         removeSpecificDayForm.student.value = ""
     })
@@ -225,13 +244,13 @@ removeStudentForm.addEventListener('submit', (e) => {
         .then(() => {
             removeStudentForm.reset()
         })
-        .catch(err => {
+        .catch((err) => {
             alert("Please enter a valid user!")
         })
 })
 
 // Real-Time Reference Table
-onSnapshot(colRef, (snapshot) => {
+const unsubRefTable = onSnapshot(colRef, (snapshot) => {
     var table = document.querySelector('.referenceTable')
     
     let rows = document.querySelectorAll('.studentRow')
@@ -266,19 +285,26 @@ loginForm.addEventListener('submit', (e) =>{
   const password = loginForm.password.value
 
   // pass in auth, email, and password, then login user, catch error if occured
-  signInWithEmailAndPassword(auth, email, password)
-    .then((cred) => {
-      console.log('user logged in:', cred.user)
-      loginForm.reset()
-      modal_container.classList.remove("show"); // Removes modal
+  setPersistence(auth, inMemoryPersistence, browserSessionPersistence)
+    .then(() => {
+        return signInWithEmailAndPassword(auth, email, password).then((cred) => {
+            console.log('user logged in:', cred.user)
+            loginForm.reset()
+            modal_container.classList.remove("show"); // Removes modal
+        })
+        .catch((err) => {
+          console.log(err.message)
+          loginForm.reset()
+        
+          document.getElementById('modalParagraph').style.display = "block";
+        })
     })
     .catch((err) => {
-      console.log(err.message)
-      loginForm.reset()
-
-      // Add's error message to login modal
-      var errorMessage = document.createElement('p')
-      errorMessage.innerHTML = "Incorrect Password"
-      loginForm.appendChild(errorMessage) 
+        console.log(err.message)
     })
+  
 })
+
+onAuthStateChanged(auth, (user) => {
+    console.log('user status changed:', user)
+  })
