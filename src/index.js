@@ -21,10 +21,6 @@ const auth = getAuth()
 // collection reference
 const colRef = collection(db, 'students')
 
-// current logged-in user reference
-const user = auth.currentUser;
-
-
 // Show students in console
 onSnapshot(colRef, (snapshot) => {
     let students = []
@@ -49,9 +45,9 @@ addStudentForm.addEventListener('submit', (e) => {
         })
         .catch((err) => {
             addStudentForm.reset()
-            if (user == null) {
+            if (auth.currentUser == null) {
                 alert("Login in order to use the site!")
-            } else {
+            } else{
                 alert('An error has occured! Try again.')
             }
         })
@@ -73,7 +69,7 @@ dayForm.addEventListener('submit', (e) => {
     })
     .catch((err) => {
         dayForm.student.value = ""
-        if (user == null) {
+        if (auth.currentUser == null) {
             alert("Login in order to use the site!")
         } else {
             alert("Please enter a valid user!")
@@ -96,11 +92,20 @@ reportForm.addEventListener('submit', (e) => {
                 reportForm.reset()
             })
             .catch((err) => {
-                alert("Please enter a valid user!")
                 reportForm.student.value = ""
+                if (auth.currentUser == null) {
+                    alert("Login in order to use the site!")
+                } else {   
+                    alert("Please enter a valid user!")
+                }
         })
     } else {
-        alert("Please write an entry!")
+        if (auth.currentUser == null) {
+            alert("Login in order to use the site!")
+            
+        } else { 
+            alert("Please write an entry!")
+        }
     }
 })
 
@@ -126,19 +131,34 @@ addReportForm.addEventListener('submit', (e) => {
                 .then(() => {
                     addReportForm.reset()
                 })
+                .catch((err) => {
+                    addReportForm.student.value = ""
+                    if (auth.currentUser == null) {
+                        alert("Login in order to use the site!")
+                    } else {
+                        alert("Please enter a valid user!")
+                    }
+                })
             })
             .catch((err) => {
-                alert("Please enter a valid user!")
-                addReportForm.student.value = ""
+                if (auth.currentUser == null) {
+                    alert("Login in order to use the site!")
+                } else {
+                    alert("Please enter a valid user!")
+                }
             })
         
     } else {
-        alert("Please write an entry!")
+        if (auth.currentUser == null) {
+            alert("Login in order to use the site!")
+        } else { 
+            alert("Please add to entry!")
+        }
     }
 })
 
 // Real-Time Table
-const unsubRealTable = onSnapshot(colRef, (snapshot) => {
+onSnapshot(colRef, (snapshot) => {
     var table = document.querySelector('.table')
     
     let rows = document.querySelectorAll('.row')
@@ -182,6 +202,7 @@ newWeekForm.addEventListener('submit', (e) => {
             snapshot.docs.forEach((doc) => {
                 studentList.push(doc.data().name)
             })
+            
 
             studentList.forEach((student) => {
                 const docRef = doc(db, 'students', student)
@@ -192,7 +213,11 @@ newWeekForm.addEventListener('submit', (e) => {
             })
         })
         .catch((err) => {
-            alert("An error has occured! Try again.")
+            if (auth.currentUser == null) {
+                alert("Login in order to use the site!")
+            } else {
+                alert("An error has occured! Try again.")
+            }
         })
 })
 
@@ -210,8 +235,12 @@ resetStudentAttendanceForm.addEventListener('submit', (e) => {
             resetStudentAttendanceForm.reset()
         })
         .catch((err) => {
-            alert("Please enter a valid user!")
             resetStudentAttendanceForm.student.value = ""
+            if (auth.currentUser == null) {
+                alert("Login in order to use the site!")
+            } else {
+                alert("Please enter a valid user!")
+            }
         })
 })
 
@@ -229,8 +258,12 @@ removeSpecificDayForm.addEventListener('submit', (e) => {
         removeSpecificDayForm.student.value = ""
     })
     .catch((err) => {
-        alert("Please enter a valid user!")
         removeSpecificDayForm.student.value = ""
+        if (auth.currentUser == null) {
+            alert("Login in order to use the site!")
+        } else {
+            alert("Please enter a valid user!")
+        }
     })
 })
 
@@ -245,12 +278,16 @@ removeStudentForm.addEventListener('submit', (e) => {
             removeStudentForm.reset()
         })
         .catch((err) => {
-            alert("Please enter a valid user!")
+            if (auth.currentUser == null) {
+                alert("Login in order to use the site!")
+            } else {
+                alert("Please enter a valid user!")
+            }
         })
 })
 
 // Real-Time Reference Table
-const unsubRefTable = onSnapshot(colRef, (snapshot) => {
+onSnapshot(colRef, (snapshot) => {
     var table = document.querySelector('.referenceTable')
     
     let rows = document.querySelectorAll('.studentRow')
