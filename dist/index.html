@@ -4,164 +4,280 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UXMA-Student-Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 10px;
-        }
-
-        .modal-container {
-            background-color: rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            opacity: 0;
-            pointer-events: none;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        .modal-container.show {
-            pointer-events: auto;
-            opacity: 1;
-        }
-
-        .modal {
-            background-color: #fff;
-            padding: 30px 50px;
-            width: 600px;
-            max-width: 100%;
-            text-align: center;
-        }
-
-        .modal p {
-            font-size: 14px;
+        #modalParagraph {
             color: red;
             display: none;
+        }
+
+        .label {
+            font-size: 15px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .label {
+                text-align: center;
+            }
+            button {
+                width: 100%;
+            }
+        }
+
+        .accordion-item { 
+            border: 1px solid rgba(0, 0, 0, 0.55);
+        }
+
+        
+
+        .accordion-button {
+            background: #212529;
+            color: #fff;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: #fff;
+            color: #212529;
+        }
+
+
+        .accordion-button:not(.collapsed)::after {
+            filter: brightness(0%) invert(50%);
+        }
+
+        .accordion-button:focus {
+            box-shadow: inherit;
         }
 
 
     </style>
 </head>
 <body>
-    <h1>UXMA-Student-Status Application</h1>
+    
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </symbol>
+      </svg>
 
-    <p>For each input, you have to enter a name unless said otherwise. Try not to add </p>
-    <form class="add">
-        <label for="name">Add Student To Database:</label>
-        <input type="text" name="name" required>
-        
-        <button>Add Student</button>
-      </form>
+    <div class="text-center " id="top">
+        <h1>UXMA Student Report</h1>
+    </div>
 
-    <form class="day">
-        <label for="day">Days:</label>
-        <select name="selectDay">
-          <option value="Monday" selected="selected">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-        </select>
-        
-        <input type="text" name="student">
-        <button>Add Day</button>
-    </form>
+    <div class="accordion accordion-flush" id="dataAccordion" style="margin: 0px 0px 25px;">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
+                  Edit Data
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    <form class="add row g-1">
+                        <div class="col-md-4 label">
+                            <label for="name">Add Student To Database:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control-sm form-control" type="text" name="name" required>
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Add Student</button>
+                        </div>
+                    </form>
 
-    <h3>The first option will create a new report, the second will add to an existing one </h3>
+                
+                    <form class="day row g-1">
+                        <div class="col-md-2 label">
+                            <label for="day">Attendance:</label>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="selectDay" class="form-select form-select-sm">
+                                <option value="Monday" selected="selected">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Add Day</button>
+                            </div>
+                    </form>
+                
 
-    <form class="report">
-        <label for="student">Report For:</label>
-        <input type="text" name="student">
-        <label for="report">Entry:</label>
-        <input type="text" name="reportEntry">
-        
-        <button>Add Report</button>
-    </form>
+                    <h4 class="d-flex justify-content-center text-center" style="margin: 0px 0px 25px;" >The first option will create a new report, the second will add to an existing one </h4>
+                
+                    <form class="report row g-1">
+                        <div class="col-md-1 label">
+                            <label for="student">Student:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div>
+                        <div class="col-md-1 label">
+                            <label for="report">Entry:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control-sm form-control" type="text" name="reportEntry">
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Add Report</button>
+                        </div>
+                    </form>
+                
+                    <form class="addToReport row g-1">
+                        <div class="col-md-1 label">
+                            <label for="student">Student:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div>
+                        <div class="col-md-1 label">
+                            <label for="report">Entry:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control-sm form-control" type="text" name="reportEntry">
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Add to Existing Report</button>
+                        </div>    
+                    </form>
+                </div>
+              </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    Remove Data
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                <div class="accordion-body">
+                    <form class="resetStudentAttendance row g-2">
+                        <div class="col-md-4 label">
+                            <label for="resetStudent">Reset Attendance For a Student:</label> 
+                        </div> 
+                        <div class="col-md-4">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Reset Attendance</button>
+                        </div>
+                    </form>
+                
+                    <form class="removeSpecificDay row g-2">
+                        <div class="col-md-4 label">
+                            <label for="removeDay">Remove a Day From a Student:</label>
+                        </div> 
+                        <div class="col-md-2">
+                            <select name="selectDay" class="form-select form-select-sm">
+                                <option value="Monday" selected="selected">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div> 
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Remove Day</button>
+                        </div> 
+                    </form>
+                
+                    <form class="removeStudent row g-2">
+                        <div class="col-md-4 label">
+                            <label for="remove">Remove Student From Database:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control-sm form-control" type="text" name="student">
+                        </div>
+                        <div class="col-md-4 ">
+                            <button type="submit" class="btn btn-secondary mb-3 btn-sm">Remove Student</button>
+                        </div>
+                    </form>  
 
-    <form class="addToReport">
-        <label for="student">Report For:</label>
-        <input type="text" name="student">
-        <label for="report">Entry:</label>
-        <input type="text" name="reportEntry">
-        
-        <button>Add to Existing Report</button>
-    </form>
-
-    <h3>Live Table (Data will only appear once attendance is added)</h3>
-
-    <table class="table">
-        <tr>
-          <th>Name</th>
-          <th>Day</th>
-          <th>Report</th>
-        </tr>
-    </table>
-
-    <br>
-    <h2>Reset/Remove Data:</h2>
-    <form class="startNewWeek">
-        <label for="newWeek">This will reset all reports and attendance!</label>
-        <button> Start New Week </button>
-    </form>
-
-    <form class="resetStudentAttendance">
-        <label for="resetStudent">Reset attendance for a specific student:</label>
-        <input type="text" name="student">
-        <button>Reset Attendance</button>
-    </form>
-
-    <form class="removeSpecificDay">
-        <label for="removeDay">This will remove a specific day for a specific student:</label>
-        <select name="selectDay">
-            <option value="Monday" selected="selected">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-        </select>
-        <input type="text" name="student">
-        <button>Remove Day</button>
-    </form>
-
-    <form class="removeStudent">
-        <label for="remove">Remove Student From Database:</label>
-        <input type="text" name="student">
-        <button>Remove Student</button>
-    </form>
-
-    <h2>Student Reference Table</h2>
-    <p>This is to make sure that, if you forget any of the students names, simply check this in order to figure out how to enter them in</p>
-    <table class="referenceTable">
-        <tr>
-          <th>Student</th>
-        </tr>
-    </table>
-
-    <div class="modal-container show" id="modal_container">
-        <div class="modal">
-            <form class="login">
-                <label for="email">Email:</label>
-                <input type="email" name="email">
-                <label for="password">Password:</label>
-                <input type="password" name="password">
-                <button>Login</button>
-                <p id="modalParagraph">Incorrect Password!</p>
-            </form>
+                    <form class="startNewWeek row g-2">
+                        <div class="col-md-6 label">
+                            <label for="newWeek" style="vertical-align: middle; font-size: 20px;">Reset All Reports And Attendance:</label>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-danger mb-3"> Start New Week </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
+    <div class="container-fluid">
+        <h2>Live Report Table</h2>
+
+            <table class="table caption-top table-hover table-dark table-bordered border-light">
+                <caption>Live Data only appears when attendance is given to a student</caption>
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col">Student</th>
+                        <th scope="col">Attendance</th>
+                        <th scope="col">Report</th>
+                    </tr>
+                </thead>
+                <tbody class="reportTable">
+                </tbody>
+            </table>
+
+        <h2>Student Reference Table</h2>
+
+        <table class="table table-sm caption-top table-hover table-dark text-center table-bordered border-light">
+            <caption>You can find a student in this list</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Student</th>
+                </tr>
+            </thead>
+            <tbody class="referenceTable">
+            </tbody>
+        </table>
+    </div>
+
+    <!--Login Modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modal-title" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="modal-title">Login to the UXMA Student Report Site</h5>
+                </div>
+                <form class="loginForm">
+                    <div class="modal-body">
+                        <label for="modal-email" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="modal-email" placeholder="instructor@email.com" name="email">
+                        <label for="modal-password" name="password"  class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="modal-password" name="password">
+                    </div>
+                    <div class="modal-footer">
+                        <p id="modalParagraph">Incorrect Email and/or Password!</p>
+                        <button type='submit' class="btn btn-dark" id="login">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="bundle.js"></script>
 </body>
 </html>

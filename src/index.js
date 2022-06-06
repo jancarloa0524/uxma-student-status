@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, onSnapshot, getDocs, getDoc, setDoc, deleteDoc, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence, browserSessionPersistence } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBq04h3lYW7lXPQN4rkE-wRdVdIF_V2oA4",
@@ -17,6 +17,20 @@ initializeApp(firebaseConfig)
 // init services
 const db = getFirestore()
 const auth = getAuth()
+
+// init alert message
+const alertMessage = (message, type) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+        `<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('')
+
+    document.getElementById("top").append(wrapper)
+}
 
 // collection reference
 const colRef = collection(db, 'students')
@@ -46,9 +60,9 @@ addStudentForm.addEventListener('submit', (e) => {
         .catch((err) => {
             addStudentForm.reset()
             if (auth.currentUser == null) {
-                alert("Login in order to use the site!")
+                alertMessage("Login in order to use the site!", "danger")
             } else{
-                alert('An error has occured! Try again.')
+                alertMessage('An error has occured! Try again.', "warning")
             }
         })
 })
@@ -70,9 +84,9 @@ dayForm.addEventListener('submit', (e) => {
     .catch((err) => {
         dayForm.student.value = ""
         if (auth.currentUser == null) {
-            alert("Login in order to use the site!")
+            alertMessage("Login in order to use the site!", "danger")
         } else {
-            alert("Please enter a valid user!")
+            alertMessage("Make sure to enter a valid student name!", "warning")
         }
     })
 })
@@ -94,17 +108,18 @@ reportForm.addEventListener('submit', (e) => {
             .catch((err) => {
                 reportForm.student.value = ""
                 if (auth.currentUser == null) {
-                    alert("Login in order to use the site!")
+                    alertMessage("Login in order to use the site!", "danger")
                 } else {   
-                    alert("Please enter a valid user!")
+                    alertMessage("Make sure to enter a valid student name!", "warning")
                 }
         })
     } else {
         if (auth.currentUser == null) {
-            alert("Login in order to use the site!")
+            reportForm.reset()
+            alertMessage("Login in order to use the site!", "danger")
             
         } else { 
-            alert("Please write an entry!")
+            alertMessage("Don't forget to write an entry!" , "warning")
         }
     }
 })
@@ -134,34 +149,36 @@ addReportForm.addEventListener('submit', (e) => {
                 .catch((err) => {
                     addReportForm.student.value = ""
                     if (auth.currentUser == null) {
-                        alert("Login in order to use the site!")
+                        alertMessage("Login in order to use the site!", "danger")
                     } else {
-                        alert("Please enter a valid user!")
+                        alertMessage("Make sure to enter a valid student name!", "warning")
                     }
                 })
             })
             .catch((err) => {
+                addReportForm.student.value = ""
                 if (auth.currentUser == null) {
-                    alert("Login in order to use the site!")
+                    alertMessage("Login in order to use the site!", "danger")
                 } else {
-                    alert("Please enter a valid user!")
+                    alertMessage("Make sure to enter a valid student name!", "warning")
                 }
             })
         
     } else {
         if (auth.currentUser == null) {
-            alert("Login in order to use the site!")
+            addReportForm.reset()
+            alertMessage("Login in order to use the site!", "danger")
         } else { 
-            alert("Please add to entry!")
+            alertMessage("Make sure to write an addition!", "warning")
         }
     }
 })
 
 // Real-Time Table
 onSnapshot(colRef, (snapshot) => {
-    var table = document.querySelector('.table')
+    var table = document.querySelector('.reportTable')
     
-    let rows = document.querySelectorAll('.row')
+    let rows = document.querySelectorAll('.reportRow')
     for (var i = 0; i < rows.length; i++) {
         rows[i].remove()
     }
@@ -172,14 +189,16 @@ onSnapshot(colRef, (snapshot) => {
     }
 
     snapshot.docs.forEach((doc) => {
-        let row = document.createElement('tr')
-        row.classList.add('row')
-        table.appendChild(row)
         if(doc.data().attendance != "") {
+            let row = document.createElement('tr')
+            row.classList.add('reportRow')
+            table.appendChild(row)
+
             for (var j = 0; j <= 2; j++) {
                 let item = document.createElement('td')
                 if (j == 0){
                     item.innerHTML = doc.data().name
+                    item.scope = "row"
                 } else if (j == 1) {
                     item.innerHTML = doc.data().attendance.join(', ')
                 } else if (j == 2) {
@@ -214,9 +233,9 @@ newWeekForm.addEventListener('submit', (e) => {
         })
         .catch((err) => {
             if (auth.currentUser == null) {
-                alert("Login in order to use the site!")
+                alertMessage("Login in order to use the site!", "danger")
             } else {
-                alert("An error has occured! Try again.")
+                alertMessage("An error has occured! Try again.", "warning")
             }
         })
 })
@@ -237,9 +256,9 @@ resetStudentAttendanceForm.addEventListener('submit', (e) => {
         .catch((err) => {
             resetStudentAttendanceForm.student.value = ""
             if (auth.currentUser == null) {
-                alert("Login in order to use the site!")
+                alertMessage("Login in order to use the site!", "danger")
             } else {
-                alert("Please enter a valid user!")
+                alertMessage("Make sure to enter a valid student name!", "warning")
             }
         })
 })
@@ -260,9 +279,9 @@ removeSpecificDayForm.addEventListener('submit', (e) => {
     .catch((err) => {
         removeSpecificDayForm.student.value = ""
         if (auth.currentUser == null) {
-            alert("Login in order to use the site!")
+            alertMessage("Login in order to use the site!", "danger")
         } else {
-            alert("Please enter a valid user!")
+            alertMessage("Make sure to enter a valid student name!", "warning")
         }
     })
 })
@@ -278,10 +297,13 @@ removeStudentForm.addEventListener('submit', (e) => {
             removeStudentForm.reset()
         })
         .catch((err) => {
+            console.log(err.message)
             if (auth.currentUser == null) {
-                alert("Login in order to use the site!")
+                alertMessage("Login in order to use the site!", "danger")
+                removeStudentForm.reset()
             } else {
-                alert("Please enter a valid user!")
+                alertMessage("Make sure to enter a valid student name!", "warning")
+                removeStudentForm.reset()
             }
         })
 })
@@ -312,8 +334,10 @@ onSnapshot(colRef, (snapshot) => {
     })
 })
 
-// Login user
-const loginForm = document.querySelector('.login')
+var myModal = new bootstrap.Modal(document.getElementById('myModal'), {})
+myModal.show()
+
+const loginForm = document.querySelector('.loginForm')
 loginForm.addEventListener('submit', (e) =>{
   e.preventDefault()
 
@@ -327,7 +351,7 @@ loginForm.addEventListener('submit', (e) =>{
         return signInWithEmailAndPassword(auth, email, password).then((cred) => {
             console.log('user logged in:', cred.user)
             loginForm.reset()
-            modal_container.classList.remove("show"); // Removes modal
+            myModal.hide()
         })
         .catch((err) => {
           console.log(err.message)
@@ -341,6 +365,7 @@ loginForm.addEventListener('submit', (e) =>{
     })
   
 })
+
 
 onAuthStateChanged(auth, (user) => {
     console.log('user status changed:', user)
